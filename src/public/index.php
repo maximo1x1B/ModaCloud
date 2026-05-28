@@ -18,6 +18,13 @@ $routes = [
     '/productos/editar'   => ['ProductController',   'edit'],
     '/productos/eliminar' => ['ProductController',   'delete'],
 
+    '/carrito'          => ['CartController', 'index'],
+    '/carrito/agregar'  => ['CartController', 'agregar'],
+    '/carrito/quitar'   => ['CartController', 'quitar'],
+    '/carrito/confirmar'=> ['CartController', 'confirmar'],
+    '/carrito/vaciar' => ['CartController', 'vaciar'],
+    '/carrito/actualizar' => ['CartController', 'actualizar'],
+
     '/proveedores'          => ['SupplierController', 'index'],
     '/proveedores/crear'    => ['SupplierController', 'create'],
     '/proveedores/editar'   => ['SupplierController', 'edit'],
@@ -29,6 +36,7 @@ $routes = [
     '/inventario/editar'      => ['InventoryController', 'edit'],
     '/inventario/eliminar'    => ['InventoryController', 'delete'],
     '/inventario/alertas'     => ['InventoryController', 'alertas'],
+
     '/admin/usuarios'        => ['AdminController', 'usuarios'],
     '/admin/usuarios/editar' => ['AdminController', 'editarUsuario'],
     '/admin/usuarios/eliminar'=> ['AdminController', 'eliminarUsuario'],

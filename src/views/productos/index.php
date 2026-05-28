@@ -133,6 +133,13 @@ function renderCard($p, $esEditor = false) {
                    style="justify-content:center"
                    onclick="return confirm('¿Eliminar <?= $nombre ?>?')">Eliminar</a>
             </div>
+        <?php else: ?>
+            <form action="/carrito/agregar?id=<?= $id ?>" method="POST" style="margin-top:auto">
+                <input type="hidden" name="cantidad" value="1">
+                <button type="submit" class="btn btn-primary w-full" style="justify-content:center">
+                    🛒 Agregar al carrito
+                </button>
+            </form>
         <?php endif; ?>
     </div>
 </div>

@@ -159,3 +159,18 @@ INSERT INTO supplier_products (supplier_id, product_id) VALUES
 (2, 3), (2, 4), (2, 6),
 (3, 7), (3, 8), (3, 9), (3, 10),
 (4, 11),(4, 12);
+
+
+-- --------------------------------------------------------
+-- Carrito
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS cart (
+                                    id          INT AUTO_INCREMENT PRIMARY KEY,
+                                    user_id     INT NOT NULL,
+                                    product_id  INT NOT NULL,
+                                    cantidad    INT NOT NULL DEFAULT 1,
+                                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_cart (user_id, product_id)
+    );
