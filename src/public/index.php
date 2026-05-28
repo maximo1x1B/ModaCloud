@@ -29,6 +29,9 @@ $routes = [
     '/inventario/editar'      => ['InventoryController', 'edit'],
     '/inventario/eliminar'    => ['InventoryController', 'delete'],
     '/inventario/alertas'     => ['InventoryController', 'alertas'],
+    '/admin/usuarios'        => ['AdminController', 'usuarios'],
+    '/admin/usuarios/editar' => ['AdminController', 'editarUsuario'],
+    '/admin/usuarios/eliminar'=> ['AdminController', 'eliminarUsuario'],
 ];
 
 // --------------------------------------------------------

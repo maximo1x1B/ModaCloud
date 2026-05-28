@@ -7,23 +7,19 @@ class ProductController {
 
     public function __construct() {
         if (!isLoggedIn()) redirect('/login');
-        $database       = new Database();
-        $this->db       = $database->connect();
-        $this->product  = new Product($this->db);
+        $database      = new Database();
+        $this->db      = $database->connect();
+        $this->product = new Product($this->db);
     }
 
-    // --------------------------------------------------------
-    // GET /productos
-    // --------------------------------------------------------
     public function index() {
         $productos = $this->product->getAll();
         $this->render('productos/index', 'Productos', compact('productos'));
     }
 
-    // --------------------------------------------------------
-    // GET/POST /productos/crear
-    // --------------------------------------------------------
     public function create() {
+        if (!hasRole('admin') && !hasRole('gerente')) redirect('/productos');
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $this->getFormData();
 
@@ -33,23 +29,17 @@ class ProductController {
             }
 
             $ok = $this->product->create($data);
-
-            if ($ok) {
-                $this->flash('exito', 'Producto creado correctamente');
-                redirect('/productos');
-            } else {
-                $this->flash('error', 'Error al crear el producto');
-                redirect('/productos/crear');
-            }
+            $ok ? $this->flash('exito', 'Producto creado correctamente')
+                : $this->flash('error', 'Error al crear el producto');
+            redirect('/productos');
         }
 
         $this->render('productos/form', 'Nuevo Producto');
     }
 
-    // --------------------------------------------------------
-    // GET/POST /productos/editar?id=X
-    // --------------------------------------------------------
     public function edit() {
+        if (!hasRole('admin') && !hasRole('gerente')) redirect('/productos');
+
         $id      = (int)($_GET['id'] ?? 0);
         $producto = $this->product->getById($id);
 
@@ -67,39 +57,25 @@ class ProductController {
             }
 
             $ok = $this->product->update($id, $data);
-
-            if ($ok) {
-                $this->flash('exito', 'Producto actualizado correctamente');
-                redirect('/productos');
-            } else {
-                $this->flash('error', 'Error al actualizar el producto');
-                redirect('/productos/editar?id=' . $id);
-            }
+            $ok ? $this->flash('exito', 'Producto actualizado correctamente')
+                : $this->flash('error', 'Error al actualizar el producto');
+            redirect('/productos');
         }
 
         $this->render('productos/form', 'Editar Producto', compact('producto'));
     }
 
-    // --------------------------------------------------------
-    // POST /productos/eliminar?id=X
-    // --------------------------------------------------------
     public function delete() {
-        $id = (int)($_GET['id'] ?? 0);
+        if (!hasRole('admin') && !hasRole('gerente')) redirect('/productos');
 
+        $id = (int)($_GET['id'] ?? 0);
         $ok = $this->product->delete($id);
 
-        if ($ok) {
-            $this->flash('exito', 'Producto eliminado correctamente');
-        } else {
-            $this->flash('error', 'Error al eliminar el producto');
-        }
-
+        $ok ? $this->flash('exito', 'Producto eliminado correctamente')
+            : $this->flash('error', 'Error al eliminar el producto');
         redirect('/productos');
     }
 
-    // --------------------------------------------------------
-    // Helpers privados
-    // --------------------------------------------------------
     private function getFormData() {
         return [
             'nombre'      => trim($_POST['nombre']      ?? ''),
