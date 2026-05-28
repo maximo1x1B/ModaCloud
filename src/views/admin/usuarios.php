@@ -33,7 +33,6 @@
                         $badgeRol = [
                             'admin'     => 'badge-danger',
                             'gerente'     => 'badge-warning',
-                            'proveedor' => 'badge-accent',
                             'cliente'   => 'badge-primary',
                         ];
                         $clase = $badgeRol[$u['rol']] ?? 'badge-primary';

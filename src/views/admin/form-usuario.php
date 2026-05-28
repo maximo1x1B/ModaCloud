@@ -21,7 +21,7 @@
         <div class="form-group">
             <label class="form-label">Rol</label>
             <select name="rol" class="form-control">
-                <?php foreach (['cliente','proveedor','gerente','admin'] as $r): ?>
+                <?php foreach (['cliente','gerente','admin'] as $r): ?>
                     <option value="<?= $r ?>" <?= $usuario['rol'] === $r ? 'selected' : '' ?>>
                         <?= ucfirst($r) ?>
                     </option>

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     nombre      VARCHAR(100) NOT NULL,
     email       VARCHAR(150) NOT NULL UNIQUE,
     password    VARCHAR(255) NOT NULL,
-    rol         ENUM('cliente','gerente','proveedor','admin') NOT NULL DEFAULT 'cliente',
+    rol         ENUM('cliente','gerente','admin') NOT NULL DEFAULT 'cliente',
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -72,7 +72,7 @@ INSERT INTO users (nombre, email, password, rol) VALUES
 ('Admin ModaCloud', 'admin@modacloud.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
 ('Juan Cliente',    'juan@mail.com',       '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'cliente'),
 ('Maria Dueña',     'maria@modacloud.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'gerente'),
-('Carlos Proveedor','carlos@textiles.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'proveedor');
+('Carlos','carlos@mail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'cliente');
 
 -- --------------------------------------------------------
 -- Productos con imágenes

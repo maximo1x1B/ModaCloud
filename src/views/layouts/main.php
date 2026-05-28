@@ -57,10 +57,6 @@
                 <li><a href="/proveedores">Proveedores</a></li>
                 <li><a href="/inventario">Inventario</a></li>
 
-            <?php elseif (hasRole('proveedor')): ?>
-                <li><a href="/productos">Catálogo</a></li>
-                <li><a href="/proveedores">Proveedores</a></li>
-
             <?php endif; ?>
 
             <li class="navbar-user">
