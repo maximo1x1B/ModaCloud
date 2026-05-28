@@ -18,6 +18,34 @@
             <?php if (hasRole('cliente')): ?>
                 <li><a href="/productos">Catálogo</a></li>
 
+            <?php if (hasRole('cliente')): ?>
+                <li>
+                    <?php
+                    $cartCount = 0;
+                    if (isLoggedIn()) {
+                        $cartDb    = new Database();
+                        $cartConn  = $cartDb->connect();
+                        $cartModel = new Cart($cartConn);
+                        $cartCount = $cartModel->count($_SESSION['user_id']);
+                    }
+                    ?>
+                    <a href="/carrito" class="btn btn-outline btn-sm" style="position:relative">
+                        🛒 Carrito
+                        <?php if ($cartCount > 0): ?>
+                            <span style="
+                                position:absolute;top:-6px;right:-6px;
+                                background:var(--color-primary);color:#fff;
+                                border-radius:var(--radius-full);
+                                font-size:10px;width:18px;height:18px;
+                                display:flex;align-items:center;justify-content:center;
+                                font-weight:600">
+                                <?= $cartCount ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+            <?php endif; ?>
+
             <?php elseif (hasRole('admin')): ?>
                 <li><a href="/productos">Productos</a></li>
                 <li><a href="/proveedores">Proveedores</a></li>

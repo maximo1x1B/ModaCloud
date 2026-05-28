@@ -14,7 +14,18 @@ class ProductController {
 
     public function index() {
         $productos = $this->product->getAll();
-        $this->render('productos/index', 'Productos', compact('productos'));
+
+        $carritoMap = [];
+        if (isLoggedIn() && hasRole('cliente')) {
+            $database  = new Database();
+            $cartModel = new Cart($database->connect());
+            $items     = $cartModel->getByUser($_SESSION['user_id']);
+            foreach ($items as $item) {
+                $carritoMap[$item['product_id']] = $item['cantidad'];
+            }
+        }
+
+        $this->render('productos/index', 'Productos', compact('productos', 'carritoMap'));
     }
 
     public function create() {
