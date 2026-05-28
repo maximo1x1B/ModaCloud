@@ -1,10 +1,6 @@
 <?php
 $porCategoria = [];
 foreach ($productos as $p) {
-    $cat = $porCategoria[$p['categoria'] ?? 'Sin categoría'][] = $p;
-}
-$porCategoria = [];
-foreach ($productos as $p) {
     $cat = $p['categoria'] ?? 'Sin categoría';
     $porCategoria[$cat][] = $p;
 }
@@ -15,45 +11,38 @@ $iconos = [
     'Bolsas'       => '🛍️',
     'Sin categoría'=> '📦',
 ];
+$esEditor = hasRole('admin') || hasRole('gerente');
 ?>
 
-<!-- Toolbar -->
 <div class="flex-between mb-lg" style="flex-wrap:wrap;gap:var(--space-md)">
     <h1 style="margin:0">Productos</h1>
     <div class="flex gap-md" style="flex-wrap:wrap;align-items:center">
 
-        <!-- Buscador -->
         <div style="position:relative">
             <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--color-text-light)">🔍</span>
-            <input
-                type="text"
-                id="buscador"
-                placeholder="Buscar producto..."
-                class="form-control"
-                style="padding-left:2rem;width:220px"
-                oninput="buscar(this.value)"
-            >
+            <input type="text" id="buscador" placeholder="Buscar producto..."
+                   class="form-control" style="padding-left:2rem;width:220px"
+                   oninput="buscar(this.value)">
         </div>
 
-        <!-- Toggle vista -->
         <div class="flex" style="border:1.5px solid var(--color-border);border-radius:var(--radius-md);overflow:hidden">
-            <button id="btn-grid" onclick="setVista('grid')"
-                class="btn btn-sm"
-                style="border-radius:0;border:none;background:var(--color-primary);color:#fff">
+            <button id="btn-grid" onclick="setVista('grid')" class="btn btn-sm"
+                    style="border-radius:0;border:none;background:var(--color-primary);color:#fff">
                 ⊞ Grid
             </button>
-            <button id="btn-cat" onclick="setVista('categoria')"
-                class="btn btn-sm"
-                style="border-radius:0;border:none;background:transparent;color:var(--color-text-muted)">
+            <button id="btn-cat" onclick="setVista('categoria')" class="btn btn-sm"
+                    style="border-radius:0;border:none;background:transparent;color:var(--color-text-muted)">
                 ☰ Categoría
             </button>
         </div>
 
-        <a href="/productos/crear" class="btn btn-primary">+ Nuevo producto</a>
+        <?php if ($esEditor): ?>
+            <a href="/productos/crear" class="btn btn-primary">+ Nuevo producto</a>
+        <?php endif; ?>
+
     </div>
 </div>
 
-<!-- Sin resultados -->
 <div id="sin-resultados" style="display:none" class="card text-center">
     <p class="text-muted">No se encontraron productos.</p>
 </div>
@@ -61,25 +50,21 @@ $iconos = [
 <?php if (empty($productos)): ?>
     <div class="card text-center">
         <p class="text-muted">No hay productos registrados aún.</p>
-        <a href="/productos/crear" class="btn btn-outline mt-md">Agregar el primero</a>
+        <?php if ($esEditor): ?>
+            <a href="/productos/crear" class="btn btn-outline mt-md">Agregar el primero</a>
+        <?php endif; ?>
     </div>
 
 <?php else: ?>
 
-<!-- ============================================================
-     Vista: Grid (todos juntos)
-============================================================ -->
 <div id="vista-grid">
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-lg)">
         <?php foreach ($productos as $p): ?>
-        <?= renderCard($p) ?>
+            <?= renderCard($p, $esEditor) ?>
         <?php endforeach; ?>
     </div>
 </div>
 
-<!-- ============================================================
-     Vista: Por categoría
-============================================================ -->
 <div id="vista-categoria" style="display:none">
     <?php foreach ($porCategoria as $categoria => $items): ?>
     <div class="categoria-seccion">
@@ -92,7 +77,7 @@ $iconos = [
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl)">
             <?php foreach ($items as $p): ?>
-            <?= renderCard($p) ?>
+                <?= renderCard($p, $esEditor) ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -102,13 +87,13 @@ $iconos = [
 <?php endif; ?>
 
 <?php
-function renderCard($p) {
-    $nombre  = htmlspecialchars($p['nombre']);
-    $cat     = htmlspecialchars($p['categoria'] ?? 'Sin categoría');
-    $desc    = htmlspecialchars(substr($p['descripcion'] ?? '', 0, 65));
-    $precio  = number_format($p['precio'], 2);
-    $img     = htmlspecialchars($p['imagen_url'] ?? '');
-    $id      = $p['id'];
+function renderCard($p, $esEditor = false) {
+    $nombre = htmlspecialchars($p['nombre']);
+    $cat    = htmlspecialchars($p['categoria'] ?? 'Sin categoría');
+    $desc   = htmlspecialchars(substr($p['descripcion'] ?? '', 0, 65));
+    $precio = number_format($p['precio'], 2);
+    $img    = htmlspecialchars($p['imagen_url'] ?? '');
+    $id     = $p['id'];
     ob_start();
 ?>
 <div class="producto-card card"
@@ -139,11 +124,16 @@ function renderCard($p) {
         <?php if (!empty($desc)): ?>
             <p class="text-small text-muted" style="margin-bottom:var(--space-md);line-height:1.4;flex:1"><?= $desc ?>...</p>
         <?php endif; ?>
-        <div class="flex gap-sm" style="margin-top:auto">
-            <a href="/productos/editar?id=<?= $id ?>" class="btn btn-outline btn-sm w-full" style="justify-content:center">Editar</a>
-            <a href="/productos/eliminar?id=<?= $id ?>" class="btn btn-danger btn-sm w-full" style="justify-content:center"
-               onclick="return confirm('¿Eliminar <?= $nombre ?>?')">Eliminar</a>
-        </div>
+
+        <?php if ($esEditor): ?>
+            <div class="flex gap-sm" style="margin-top:auto">
+                <a href="/productos/editar?id=<?= $id ?>" class="btn btn-outline btn-sm w-full"
+                   style="justify-content:center">Editar</a>
+                <a href="/productos/eliminar?id=<?= $id ?>" class="btn btn-danger btn-sm w-full"
+                   style="justify-content:center"
+                   onclick="return confirm('¿Eliminar <?= $nombre ?>?')">Eliminar</a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php

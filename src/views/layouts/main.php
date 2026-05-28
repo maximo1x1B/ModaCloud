@@ -9,23 +9,41 @@
 </head>
 <body>
 
-<!-- --------------------------------------------------------
-     Navbar
--------------------------------------------------------- -->
 <nav class="navbar">
     <a href="/" class="navbar-brand">👗 ModaCloud</a>
 
     <ul class="navbar-links">
         <?php if (isLoggedIn()): ?>
-            <li><a href="/productos">Productos</a></li>
-            <li><a href="/proveedores">Proveedores</a></li>
-            <li><a href="/inventario">Inventario</a></li>
-            <li><a href="/inventario/alertas">⚠️ Alertas</a></li>
+
+            <?php if (hasRole('cliente')): ?>
+                <li><a href="/productos">Catálogo</a></li>
+
+            <?php elseif (hasRole('admin')): ?>
+                <li><a href="/productos">Productos</a></li>
+                <li><a href="/proveedores">Proveedores</a></li>
+                <li><a href="/inventario">Inventario</a></li>
+                <li><a href="/admin/usuarios">👥 Usuarios</a></li>
+
+            <?php elseif (hasRole('gerente')): ?>
+                <li><a href="/productos">Productos</a></li>
+                <li><a href="/proveedores">Proveedores</a></li>
+                <li><a href="/inventario">Inventario</a></li>
+
+            <?php elseif (hasRole('proveedor')): ?>
+                <li><a href="/productos">Catálogo</a></li>
+                <li><a href="/proveedores">Proveedores</a></li>
+
+            <?php endif; ?>
+
             <li class="navbar-user">
                 👤 <?= htmlspecialchars($_SESSION['nombre']) ?>
+                <span class="badge badge-primary" style="margin-left:4px">
+                    <?= ucfirst($_SESSION['rol']) ?>
+                </span>
                 &nbsp;|&nbsp;
                 <a href="/logout">Salir</a>
             </li>
+
         <?php else: ?>
             <li><a href="/login">Iniciar sesión</a></li>
             <li><a href="/register">Registrarse</a></li>
@@ -33,9 +51,6 @@
     </ul>
 </nav>
 
-<!-- --------------------------------------------------------
-     Mensajes flash (éxito / error)
--------------------------------------------------------- -->
 <?php if (isset($_SESSION['flash'])): ?>
     <div class="flash flash-<?= $_SESSION['flash']['tipo'] ?>">
         <?= htmlspecialchars($_SESSION['flash']['mensaje']) ?>
@@ -43,9 +58,6 @@
     <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
-<!-- --------------------------------------------------------
-     Contenido de cada vista
--------------------------------------------------------- -->
 <main class="container">
     <?= $content ?? '' ?>
 </main>
