@@ -54,7 +54,7 @@ class AuthController {
             $nombre   = trim($_POST['nombre']   ?? '');
             $email    = trim($_POST['email']    ?? '');
             $password = trim($_POST['password'] ?? '');
-            $rol      = trim($_POST['rol']      ?? 'cliente');
+            $rol = 'cliente';
 
             if (empty($nombre) || empty($email) || empty($password)) {
                 $this->flash('error', 'Completa todos los campos');
