@@ -60,7 +60,7 @@ $esEditor = hasRole('admin') || hasRole('gerente');
 <div id="vista-grid">
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-lg)">
         <?php foreach ($productos as $p): ?>
-            <?= renderCard($p, $esEditor) ?>
+            <?= renderCard($p, $esEditor, $carritoMap ?? []) ?>
         <?php endforeach; ?>
     </div>
 </div>
@@ -77,7 +77,7 @@ $esEditor = hasRole('admin') || hasRole('gerente');
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl)">
             <?php foreach ($items as $p): ?>
-                <?= renderCard($p, $esEditor) ?>
+                <?= renderCard($p, $esEditor, $carritoMap ?? []) ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -87,13 +87,14 @@ $esEditor = hasRole('admin') || hasRole('gerente');
 <?php endif; ?>
 
 <?php
-function renderCard($p, $esEditor = false) {
-    $nombre = htmlspecialchars($p['nombre']);
-    $cat    = htmlspecialchars($p['categoria'] ?? 'Sin categoría');
-    $desc   = htmlspecialchars(substr($p['descripcion'] ?? '', 0, 65));
-    $precio = number_format($p['precio'], 2);
-    $img    = htmlspecialchars($p['imagen_url'] ?? '');
-    $id     = $p['id'];
+function renderCard($p, $esEditor = false, $carritoMap = []) {
+    $nombre       = htmlspecialchars($p['nombre']);
+    $cat          = htmlspecialchars($p['categoria'] ?? 'Sin categoría');
+    $desc         = htmlspecialchars(substr($p['descripcion'] ?? '', 0, 65));
+    $precio       = number_format($p['precio'], 2);
+    $img          = htmlspecialchars($p['imagen_url'] ?? '');
+    $id           = $p['id'];
+    $enCarrito    = $carritoMap[$id] ?? 0;
     ob_start();
 ?>
 <div class="producto-card card"
@@ -133,7 +134,23 @@ function renderCard($p, $esEditor = false) {
                    style="justify-content:center"
                    onclick="return confirm('¿Eliminar <?= $nombre ?>?')">Eliminar</a>
             </div>
+
+        <?php elseif ($enCarrito > 0): ?>
+            <!-- Ya está en el carrito — mostrar contador -->
+            <div class="flex" style="margin-top:auto;align-items:center;border:1.5px solid var(--color-primary);border-radius:var(--radius-md);overflow:hidden">
+                <a href="/carrito/actualizar?id=<?= $id ?>&accion=restar&origen=catalogo"
+                   class="btn btn-sm"
+                   style="border-radius:0;border:none;background:var(--color-primary-light);color:var(--color-primary-dark);padding:8px 14px;font-size:1.1rem;font-weight:700">−</a>
+                <span class="text-bold" style="flex:1;text-align:center;color:var(--color-primary-dark)">
+                    <?= $enCarrito ?> en carrito
+                </span>
+                <a href="/carrito/actualizar?id=<?= $id ?>&accion=sumar&origen=catalogo"
+                   class="btn btn-sm"
+                   style="border-radius:0;border:none;background:var(--color-primary);color:#fff;padding:8px 14px;font-size:1.1rem;font-weight:700">+</a>
+            </div>
+
         <?php else: ?>
+            <!-- No está en el carrito -->
             <form action="/carrito/agregar?id=<?= $id ?>" method="POST" style="margin-top:auto">
                 <input type="hidden" name="cantidad" value="1">
                 <button type="submit" class="btn btn-primary w-full" style="justify-content:center">
