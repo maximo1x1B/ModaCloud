@@ -18,16 +18,18 @@ class InventoryController {
     // GET /inventario
     // --------------------------------------------------------
     public function index() {
-        $inventario = $this->inventory->getAll();
-        $this->render('inventario/index', 'Inventario', compact('inventario'));
+        // Cambiado a $inventarios para que coincida con la vista
+        $inventarios = $this->inventory->getAll();
+        $this->render('inventario/index', 'Inventario', compact('inventarios'));
     }
 
     // --------------------------------------------------------
     // GET /inventario/alertas
     // --------------------------------------------------------
     public function alertas() {
-        $alertas = $this->inventory->getLowStock();
-        $this->render('inventario/index', 'Alertas de Stock', compact('alertas'));
+        // Cambiado a $inventarios para que la vista index pueda renderizar las alertas
+        $inventarios = $this->inventory->getLowStock();
+        $this->render('inventario/index', 'Alertas de Stock', compact('inventarios'));
     }
 
     // --------------------------------------------------------
@@ -98,7 +100,6 @@ class InventoryController {
     // --------------------------------------------------------
     public function delete() {
         $id = (int)($_GET['id'] ?? 0);
-
         $ok = $this->inventory->delete($id);
 
         if ($ok) {
@@ -133,12 +134,18 @@ class InventoryController {
         $pageTitle = $titulo;
         extract($vars);
         ob_start();
-        require_once BASE_PATH . "views/{$vista}.php";
+        $file = BASE_PATH . "views/{$vista}.php";
+        if(file_exists($file)) {
+            require_once $file;
+        } else {
+            echo "Error: La vista {$vista} no existe.";
+        }
         $content = ob_get_clean();
         require_once BASE_PATH . 'views/layouts/main.php';
     }
 
     private function flash($tipo, $mensaje) {
+        if (session_status() === PHP_SESSION_NONE) session_start();
         $_SESSION['flash'] = ['tipo' => $tipo, 'mensaje' => $mensaje];
     }
 }
